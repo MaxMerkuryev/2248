@@ -12,7 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26827febd46c6904bb47a5e4083050f0, type: 3}
   m_Name: Grid Config
   m_EditorClassIdentifier: 
-  <TilePrefab>k__BackingField: {fileID: 6257834917777336346, guid: 68c3c3799374ccc41851cdc98457f8b7, type: 3}
-  <TilesCountX>k__BackingField: 5
-  <TilesCountY>k__BackingField: 8
+  <GridSize>k__BackingField: {x: 5, y: 8}
   <TileSize>k__BackingField: 160

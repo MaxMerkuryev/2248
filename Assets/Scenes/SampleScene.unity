@@ -413,6 +413,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49324fe14ce98174a900c9b11e2d7308, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _tileGeneratorConfig: {fileID: 11400000, guid: 21949272c57e297458b6b55a27b09aba, type: 2}
   _gridConfig: {fileID: 11400000, guid: 2e11716e4b790f444961f199452b23f3, type: 2}
   _canvas: {fileID: 845600560}
 --- !u!4 &1737323724
