@@ -17,6 +17,8 @@ namespace _2248 {
 		}
 
 		public Tile Create(int value) {
+			value = Validate(value);
+
 			Color color = GetColor(value);
 			TileData data = new TileData(color, value);
 
@@ -27,8 +29,14 @@ namespace _2248 {
 		}
 
 		private Color GetColor(int value) {
-			int index = (int)Mathf.Log(value, _config.Base) - 1;
+			int index = Mathf.FloorToInt(Mathf.Log(value, _config.Base) - 1);
 			return _config.Colors[index % _config.Colors.Length];
+		}
+
+		private int Validate(int value) {
+			int log = Mathf.FloorToInt(Mathf.Log(value, _config.Base));
+			int pow = Mathf.FloorToInt(Mathf.Pow(_config.Base, log));
+			return pow;
 		}
 	}
 }

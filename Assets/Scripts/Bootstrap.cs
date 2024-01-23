@@ -1,4 +1,5 @@
 ﻿using TMPro;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
 namespace _2248 {
@@ -10,6 +11,8 @@ namespace _2248 {
 		private SelectionHandler _selectionHandler;
 
 		private void Awake() {
+			Application.targetFrameRate = 60;
+
 			TileGenerator generator = new TileGenerator(_tileGeneratorConfig);
 			Grid grid = new Grid(_canvas.transform, _gridConfig, generator);
 

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace _2248 {
 	public class SelectionHandler {
 		private List<Tile> _tiles;
 		private Grid _grid;
-		private int _sum;
 
 		public SelectionHandler(Grid grid) {
 			_grid = grid;
@@ -26,23 +26,16 @@ namespace _2248 {
 		}
 
 		private void Register(Tile tile) {
-			Debug.LogError("register");
-
 			if (IsPrevious(tile)) {
 				RemoveCurrent();
 				return;
 			}
-			
-			Debug.LogError("not previous");
 
 			if (IsRegistered(tile)) {
 				return;
 			}
-			
-			Debug.LogError("not registered");
 
 			if (IsValid(tile)) {
-				Debug.LogError("valid");
 				Add(tile);
 			}
 		}
@@ -57,12 +50,11 @@ namespace _2248 {
 				return;
 			}
 
-			Tile lastTile = _tiles[^1];
-			(int x, int y) lastTileCoord = lastTile.Coord;
-			int lastTileValue = lastTile.Value;
+			(int x, int y) coord = GetLastTile().Coord;
+			int value = _tiles.Sum(x => x.Value);
 
-			_grid.Clear(_tiles);
-			_grid.Create(lastTileCoord, lastTileValue);
+			_grid.Clear(_tiles.Where(x => x != GetLastTile()).ToList());
+			_grid.Create(coord, value);
 
 			_tiles.Clear();
 		}
@@ -70,15 +62,13 @@ namespace _2248 {
 		private void Add(Tile tile) {
 			tile.Select();
 			_tiles.Add(tile);
-			_sum += tile.Value;
 		}
 
 		private void RemoveCurrent() {
-			Tile tile = _tiles[^1];
+			Tile tile = GetLastTile();
 			tile.Deselect();
 
 			_tiles.Remove(tile);
-			_sum -= tile.Value;
 		}
 
 		private bool IsRegistered(Tile tile) {
@@ -91,7 +81,28 @@ namespace _2248 {
 		}
 
 		private bool IsValid(Tile tile) {
-			return _tiles.Count == 0 || tile.Value <= _sum;
+			if (ListIsEmpty()) return true;
+
+			return IsValidCoord(tile.Coord) 
+				&& IsEqualOrGreaterThenMax(tile.Value) 
+				&& FitsRange(tile.Value);
+		}
+
+		private bool IsValidCoord((int x, int y) coord) {
+			Tile lastTile = GetLastTile();
+
+			int x = Mathf.Abs(coord.x - lastTile.Coord.x);
+			int y = Mathf.Abs(coord.y - lastTile.Coord.y) ;
+
+			return  x <= 1 && y <= 1;
+		}
+
+		private bool IsEqualOrGreaterThenMax(int value) => value >= _tiles.Max(x => x.Value);
+		private bool FitsRange(int value) => value <= _tiles.Sum(x => x.Value);
+		private bool ListIsEmpty() => _tiles.Count == 0;
+
+		private Tile GetLastTile() {
+			return _tiles[^1];
 		}
 	}
 }

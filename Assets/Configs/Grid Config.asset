@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Grid Config
   m_EditorClassIdentifier: 
   <GridSize>k__BackingField: {x: 5, y: 8}
-  <TileSize>k__BackingField: 160
+  <TileSize>k__BackingField: 175

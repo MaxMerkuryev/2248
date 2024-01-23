@@ -14,9 +14,12 @@ namespace _2248 {
 
 		public Grid(Transform container, GridConfig config, TileGenerator generator) {
 			_config = config;
+			
 			_container = container;
 			_generator = generator;
+			
 			_tiles = new Tile[_config.GridSize.x, _config.GridSize.y];
+			_emptyCells = new List<(int x, int y)>();
 
 			FillGrid();
 		}
@@ -30,11 +33,13 @@ namespace _2248 {
 					_emptyCells.Add(coord);
 				} 
 			}
+
+			FillEmptyCells();
 		}
 
 		public void FillEmptyCells() {
 			for (int i = 0; i < _emptyCells.Count; i++) {
-				AddTile(_emptyCells[i], _generator.CreateRandom());
+				AddTile(_emptyCells[i], _generator.CreateRandom(), (i + 1) * 0.05f);
 			}
 
 			_emptyCells.Clear();
@@ -80,9 +85,10 @@ namespace _2248 {
 			}
 		}
 
-		private void AddTile((int x, int y) coord, Tile tile) {
+		private void AddTile((int x, int y) coord, Tile tile, float delay = 0) {
 			Vector2 tilePosition = GetPositionFromCoord(coord.x, coord.y);
 			tile.Init(coord, _container, tilePosition);
+			if(delay != 0) tile.PlayAppearAnimation(delay);
 			_tiles[coord.x, coord.y] = tile;
 		}
 	}

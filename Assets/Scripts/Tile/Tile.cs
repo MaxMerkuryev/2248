@@ -1,6 +1,6 @@
-﻿using TMPro;
+﻿using DG.Tweening;
+using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace _2248 {
@@ -29,19 +29,21 @@ namespace _2248 {
 		}
 
 		public void Select() {
-			ScaleUp();
+			AnimateScale(1.1f);
 		}
 
 		public void Deselect() {
-			ScaleDown();
+			AnimateScale(1);
 		}
 
-		private void ScaleUp() {
-			transform.localScale = Vector3.one * 1.1f;
+		public void PlayAppearAnimation(float delay) {
+			transform.localScale = Vector3.zero;
+			DOTween.Sequence().Insert(delay, AnimateScale(1));
 		}
 
-		private void ScaleDown() {
-			transform.localScale = Vector3.one;
+		private Tween AnimateScale(float scale) {
+			transform.DOComplete();
+			return transform.DOScale(scale, 0.3f).SetEase(Ease.OutBack);
 		}
 	}
 }
