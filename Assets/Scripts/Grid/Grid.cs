@@ -2,9 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace _2248 {
-	public class Grid {
-		public static Grid Instance;
-		
+	public class Grid {		
 		private Transform _container;
 		private GridConfig _config;
 		private TileGenerator _generator;
@@ -15,8 +13,6 @@ namespace _2248 {
 		private Vector2 _origin => new Vector3(_config.GridSize.x, _config.GridSize.y) * _config.TileSize / 2f;
 
 		public Grid(Transform container, GridConfig config, TileGenerator generator) {
-			Instance = this;
-
 			_config = config;
 			_container = container;
 			_generator = generator;
@@ -25,12 +21,12 @@ namespace _2248 {
 			FillGrid();
 		}
 
-		public void Destroy(List<Tile> tiles) {
+		public void Clear(List<Tile> tiles) {
 			for (int i = 0; i < tiles.Count; i++) {
 				(int x, int y) coord = tiles[i].Coord;
 
 				if (IsValidCoord(coord)) {
-					Object.Destroy(_tiles[coord.x, coord.y]);
+					Object.Destroy(_tiles[coord.x, coord.y].gameObject);
 					_emptyCells.Add(coord);
 				} 
 			}
@@ -38,24 +34,37 @@ namespace _2248 {
 
 		public void FillEmptyCells() {
 			for (int i = 0; i < _emptyCells.Count; i++) {
-				(int x, int y) coord = _emptyCells[i];
-				Tile tile = _generator.CreateRandom();
-				AddTile(coord, tile);
+				AddTile(_emptyCells[i], _generator.CreateRandom());
 			}
 
 			_emptyCells.Clear();
 		}
 
-		private void AddTile((int x, int y) coord, Tile tile) {
-			Vector2 tilePosition = GetPositionFromCoord(coord.x, coord.y);
-			tile.Init(coord, _container, tilePosition);
-			_tiles[coord.x, coord.y] = tile;
+		public void Create((int x, int y) coord, int value) {
+			if (IsValidCoord(coord)) {
+				Object.Destroy(_tiles[coord.x, coord.y].gameObject);				
+				AddTile(coord, _generator.Create(value));
+			}
+		}
+
+		public bool TryGetTile(Vector2 position, out Tile tile) {
+			(int x, int y) coord = GetCoordFromPosition(position);
+			if (IsValidCoord(coord)) {
+				tile = _tiles[coord.x, coord.y];
+				return true;
+			}
+
+			tile = null;
+			return false;
+		}
+
+		private (int x, int y) GetCoordFromPosition(Vector2 position) {
+			Vector2 coord = (position - _containerPosition - Vector2.one * _config.TileSize / 2f + _origin) / _config.TileSize;
+			return (Mathf.RoundToInt(coord.x), Mathf.RoundToInt(coord.y));
 		}
 
 		private Vector2 GetPositionFromCoord(int x, int y) {
-			return _containerPosition 
-				+ Vector2.one * _config.TileSize / 2f 
-				- _origin + new Vector2(x, y) * _config.TileSize;
+			return _containerPosition + Vector2.one * _config.TileSize / 2f - _origin + new Vector2(x, y) * _config.TileSize;
 		}
 
 		private bool IsValidCoord((int x, int y) coord) {
@@ -66,10 +75,15 @@ namespace _2248 {
 		private void FillGrid() {
 			for (int x = 0; x < _config.GridSize.x; x++) {
 				for (int y = 0; y < _config.GridSize.y; y++) {
-					Tile tile = _generator.CreateRandom();
-					AddTile((x,y), tile);
+					AddTile((x,y), _generator.CreateRandom());
 				}
 			}
+		}
+
+		private void AddTile((int x, int y) coord, Tile tile) {
+			Vector2 tilePosition = GetPositionFromCoord(coord.x, coord.y);
+			tile.Init(coord, _container, tilePosition);
+			_tiles[coord.x, coord.y] = tile;
 		}
 	}
 }

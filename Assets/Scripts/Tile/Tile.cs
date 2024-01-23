@@ -4,11 +4,12 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace _2248 {
-	public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerUpHandler {
+	public class Tile : MonoBehaviour {
 		[SerializeField] private TextMeshProUGUI _value;
 		[SerializeField] private Image _image;
 
 		public (int x, int y) Coord { get; private set; }
+		public int Value { get; private set; }
 
 		public Tile Clone() {
 			return Instantiate(this);
@@ -17,6 +18,8 @@ namespace _2248 {
 		public void Init(TileData data) {
 			_value.text = data.Value.ToString();
 			_image.color = data.Color;
+
+			Value = data.Value;
 		}
 
 		public void Init((int x, int y) coord, Transform parent, Vector2 position) {
@@ -25,16 +28,20 @@ namespace _2248 {
 			transform.SetParent(parent);
 		}
 
-		public void OnPointerDown(PointerEventData eventData) {
-			// register this
+		public void Select() {
+			ScaleUp();
 		}
 
-		public void OnPointerUp(PointerEventData eventData) {
-			// ???
+		public void Deselect() {
+			ScaleDown();
 		}
 
-		public void OnPointerEnter(PointerEventData eventData) {
-			// register this ?
+		private void ScaleUp() {
+			transform.localScale = Vector3.one * 1.1f;
+		}
+
+		private void ScaleDown() {
+			transform.localScale = Vector3.one;
 		}
 	}
 }
